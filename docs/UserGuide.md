@@ -166,6 +166,10 @@ AddressBook data are saved as a JSON file `[JAR file location]/data/addressbook.
 If your changes to the data file makes its format invalid, AddressBook will discard all data and start with an empty data file at the next run.
 </div>
 
+### Invoke recent command : invoke
+Invoke the most recent command being used.
+Format: `invoke`
+
 ### Archiving data files `[coming in v2.0]`
 
 _Details coming soon ..._
