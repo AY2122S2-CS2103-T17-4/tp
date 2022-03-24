@@ -114,7 +114,7 @@ How the parsing works:
 * All `XYZCommandParser` classes (e.g., `AddCommandParser`, `DeleteCommandParser`, ...) inherit from the `Parser` interface so that they can be treated similarly where possible e.g, during testing.
 
 ### Model component
-**API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
+**API** : [`Model.java`](https://github.com/AY2122S2-CS2103T-T17-4/tp/tree/master/src/main/java/seedu/address/model/Model.java)
 
 <img src="images/ModelClassDiagram.png" width="450" />
 
@@ -153,42 +153,60 @@ Classes used by multiple components are in the `seedu.addressbook.commons` packa
 ## **Implementation**
 
 
-### \[Proposed\] Undo/redo feature
+### Undo and redo feature
 
-#### Proposed Implementation
+The address book undo and redo mechanism is managed by `StateAddressBook`, which extends `AddressBook`. It keeps track of the address book state history, stored internally as a `stateHistory` and `currentStateIndex`. `currentStateIndex` points to the current state of the address book. The number of undoable and redoable actions is capped by `UNDO_REDO_CAPACITY`, currently set to 20. Additionally, it implements the following operations:
 
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
+* `StateAddressBook#undo()` — Restores the address book to its previous state.
+* `StateAddressBook#redo()` — Restores the address book to a previously undid state.
+* `StateAddressBook#saveState()` — Saves the current address book state in stateHistory.
+* `StateAddressBook#isUndoable()` — Returns if the address book is undoable.
+* `StateAddressBook#isRedoable()` — Returns if the address book is redoable.
 
-* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
-* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
+These operations are exposed in the `Model` interface respectively as
+* `Model#undoAddressBook()`
+* `Model#redoAddressBook()`
+* `Model#saveAddressBookState()`
+* `Model#canUndoAddressBook()`
+* `Model#canRedoAddressBook()`
 
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
+Commands that do not modify the address book states will not call `Model#saveAddressBookState()`. The address book undo and redo mechanism only tracks commands that modify the address book state, the commands that are undoable and redoable are `add`, `edit`, `delete` and `clear`.
 
-Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
+Given below is an example usage scenario and how undo and redo mechanism behaves at each step. For demonstration, `UNDO_REDO_CAPACITY` is set to 3.
 
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
+Step 1. The user launches the application for the first time. The `StateAddressBook` will be initialized with the initial address book state, and the `currentStateIndex` points to the initial address book state.
 
 ![UndoRedoState0](images/UndoRedoState0.png)
 
-Step 2. The user executes `delete 5` command to delete the 5th person in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+Step 2. The user executes `edit 1 n/Bob` command to edit the first person in the address book. After the `edit` command executes, it calls `Model#saveAddressBookState()`, which saves the modified state of the address book to `stateHistory`, and the `currentStateIndex` is shifted to the newly inserted address book state.
 
 ![UndoRedoState1](images/UndoRedoState1.png)
 
-Step 3. The user executes `add n/David …​` to add a new person. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+Step 3. The user executes `delete 2` to delete the second person. The `delete` command also calls `Model#saveAddressBookState()`, creating another modified address book state to be saved into the `stateHistory`. As before, `currentStateIndex` is incremented.
 
 ![UndoRedoState2](images/UndoRedoState2.png)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If a `Command#execute` fails, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into `stateHistory` and `currentStateIndex` will not change.
 
 </div>
 
-Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
+Step 4. The user executes `clear` to clear the address book. The `clear` command also calls `Model#saveAddressBookState()`, creating another modified address book state to be saved into the `stateHistory`. Similarly, `currentStateIndex` is incremented.
 
 ![UndoRedoState3](images/UndoRedoState3.png)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If `stateHistory#isFull()` is true, i.e. size of `stateHistory` is equal to `UNDO_REDO_CAPACITY` + 1, then the state at index 0 of `stateHistory` will be removed.
+
+</div>
+
+Step 5. The user decides that clearing his address book was not a good idea. He executes `undo` to restore his contacts. The `undo` command calls `Model#undoAddressBook()`, which will decrement the `currentStateIndex`, shifting it left once. `currentStateIndex` now points to the previous address book state, and restores the address book to that state.
+
+![UndoRedoState4](images/UndoRedoState4.png)
+
+Step 6. The user wants to revert his `delete 2` command from Step 3 as well. He executes `undo` to revert the deletion. Similarly to Step 5, the `delete` command calls `Model#undoAddressBook()`, which will decrement the `currentStateIndex`, shifting it left once. `currentStateIndex` now points to the previous address book state, and restores the address book to that state.
+
+![UndoRedoState5](images/UndoRedoState5.png)
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStateIndex` is at index 0, there are no previous address book states to restore. The `undo` command calls `Model#canUndoAddressBook()` to check if it is undoable. In this case, if `undo` is executed once more, return an error will be returned to the user rather than performing the undo mechanism.
 
 </div>
 
@@ -200,38 +218,63 @@ The following sequence diagram shows how the undo operation works:
 
 </div>
 
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
+Step 7. The user can't make up his mind and decides to redo his undo. He executes `redo` to revert the previously undid command `delete 2`. The `delete` command calls `Model#redoAddressBook()`, which will increment the `currentStateIndex`, shifting it right once. `currentStateIndex` now points to the previous undid address book state, and restores the address book to that state.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
+![UndoRedoState6](images/UndoRedoState6.png)
+
+<div markdown="span" class="alert alert-info">  
+:information_source: **Note:** If `currentStateIndex` is at index `stateHistory.size() - 1`, pointing to the latest address book state, there are no undone AddressBook states to restore. The `redo` command calls `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than performing the redo mechanism.
 
 </div>
 
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
+Step 8. The user executes the `list` command. Commands that do not modify the address book state, such as `list`, will not call `Model#saveAddressBookState()`. Hence, `stateHistory` does not change.
 
-![UndoRedoState4](images/UndoRedoState4.png)
+![UndoRedoState7](images/UndoRedoState7.png)
 
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add n/David …​` command. This is the behavior that most modern desktop applications follow.
+Step 9. The user executes `add n/Tom …​`, which calls `Model#saveAddressBookState()`. Since `currentStateIndex` is not pointing at the end of the `stateHistory`, all address book states after the `currentStateIndex` will be cleared by calling `StateAddressBook#clearAfterCurrentStateIndex()`. Why this is so is because it no longer makes sense to redo the `clear` command. This behaviour follows modern application undo and redo functionality.
 
-![UndoRedoState5](images/UndoRedoState5.png)
+![UndoRedoState8](images/UndoRedoState8.png)
 
 The following activity diagram summarizes what happens when a user executes a new command:
 
-<img src="images/CommitActivityDiagram.png" width="250" />
+<img src="images/SaveStateActivityDiagram.png" width="224" />
 
 #### Design considerations:
 
 **Aspect: How undo & redo executes:**
 
-* **Alternative 1 (current choice):** Saves the entire address book.
+* **Current implementation:** Saves the entire address book.
     * Pros: Easy to implement.
     * Cons: May have performance issues in terms of memory usage.
+    * Workaround: Limit the number of undoable and redoable actions, using `UNDO_REDO_CAPACITY`. Currently, it is set to 20.
 
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-    * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
+
+* **Current implementation:** `stateHistory` is an `ArrayList`.
+    * Pros: Easy to implement and less prone to bugs.
+    * Cons: Inefficiency of removing old states. Since `stateHistory` is an `ArrayList`, when `StateAddressBook#saveState()` is called and `StateAddressBook#isFull()` is true, i.e. `stateHistory.size()` is equal to `UNDO_REDO_CAPACITY` + 1, the first index is removed via `ArrayList.remove(0)`, which has a time complexity of O(n).
+    * Solution: Use a doubly linked list with next and previous pointers to achieve O(1) time complexity for all `StateAddressBook` methods. However, Java in-built lists do not support next and previous pointers. Hence, we will need to carefully implement a doubly linked list and ensure that it is bug free.
+
+
+* **Alternative 1:** Individual command knows how to undo and redo by itself.
+    * Pros: `stateHistory` will use less memory. E.g. for `delete` it only needs to save the person being deleted.
     * Cons: We must ensure that the implementation of each individual command are correct.
 
-_{more aspects and alternatives to be added}_
+### Find feature
+The address book find command allow users to search contacts based on their name, email, phone, address, tags, and memo. When the user keys in a find command, the user input is parsed through a `FindCommandParser` and if a valid input is given, the `FindCommand#execute(Model)` method will be invoked. Doing this will effectively filter the person list in the `Addressbook` and this filtered list will be returned to the Ui for display.
+
+Given below is a sequence diagram to show the execution flow of the find command and a walk-through for each step of the execution:
+
+<img src="images/FindSequenceDiagram.png"/>
+<br/>
+<br/>
+<img src="images/PersonPredicate.png"/>
+
+Step 1. When a user invokes a find command from the Ui, `LogicManager` will be called, which parses the user input into `AddressbookParser#parseCommand(String)`.
+
+Step 2. `FindCommandParser` will then be instantiated and `FindCommandParser#parse(String)` is invoked. If a valid input is provided, `FindCommandParser#getDescriptor(String)`is called.
+
+Since a user can key in multiple valid parameters to increase the scope of a search (i.e. search by name and tags), we will need a way to identify different parts of the user input and match the input to their corresponding prefix. This can be achieved with the `FindPersonDescriptor` class where it will store the descriptions to search a person by.
+
 
 ###  HistoryCommand feature
 
@@ -283,6 +326,52 @@ The following activity diagram summarizes what happens when a user executes hist
 
 <img src="images/HistoryActivityDiagram.png" width="482" />
 
+
+Step 3. The `FindPersonDescriptor` object is passed as an argument into the  `PersonPredicate` constructor and the object created is returned to `FindCommandParser`.
+
+<div markdown="span" class="alert alert-info">  
+:information_source: **Note:** Two note-worthy classes that are created in `PersonPredicate` but not shown in the sequence diagram is the `ExactWordMatchPredicate` and `PartialWordMatchPredicate` which encapsulate the logic of conducting exact word match and partial word match on a person's attribute respectively. They are used in the `PersonPredicate#test(Person)` method during the filter process and to conduct exact word match/partial word match depending on the person's attribute. More information will be given in the design consideration. 
+</div>
+
+Step 4. `FindCommandParser` will then use the predicate object to create the `FindCommand` object and this object is returned to `LogicManager`.
+
+Step 5. `LogicManager` will then call`FindCommand#execute(Model)` method and this method will invoke 
+`Model#updateFilteredPersonList(PersonContainsKeywordsPredicate)` where it will update the filter for the person list in the address book.
+
+Step 6. After the filter has been updated, each person in the person list will be tested against the predicate to see if any of the information in the person's attribute matches any of the keywords provided by the user. The filtered list is created and returned to the Ui.
+
+**Design Considerations:** 
+
+**Aspect: How find feature executes:** 
+* **Current implementation:** Each invocation of the find feature filters the original person list. 
+    * Pros: It is easy to implement. 
+    * Cons: Users might want to filter the filtered person list even further after viewing it but with the current implementation, this is not possible.  
+    * Workaround: To simulate the chaining of multiple find commands, users will have to remember their search condition(s) for the first find and add on/modify the search condition(s) in subsequent find commands. A history feature is developed to assist users to achieve that as it returns the most recent command that is parsed into the application. By invoking the history command, the search condition of the previous find command can be retrieved and all the user have to do is to add on to the returned search condition(s).  
+    
+* **Alternative 1:** Allow chaining of the find command so that filtering of the filtered person list can be performed.  
+    * Pros: It is a useful feature to have. 
+    * Cons: It is costly in terms of time and effort to develop as the current implementation can already achieve a similar functionality. To allow chaining of the find command, we will have to change the data structure that stores the filtered person list and since there are multiple classes in the application that relies on this list, changing it might require us to change certain components in other classes as well.
+
+**Aspect: How the find feature matches words**
+* **Current implementation:** Different search criteria for different search parameters. For example, address, memo and tags follows an exact word match criteria while name, phone and email follows a partial word match criteria. 
+  * Pros: Allows for a more accurate search that meets the needs of the user (as opposed to adopting a single search criteria for all the person's attribute). 
+    * Tags was chosen to follow the exact word match criteria because users are likely to remember the full word of a tag and search for them.
+    * As for address and memo, since those attributes can be stored as sentences, allowing a partial word match would increase the average hit rate per search query and as a result, lead to a search result that may not show any meaningful information. For instance, the word "a" often appears in many sentences in the English language thus, allowing for this partial search of the word "a" in a sentence may produce many result the user might not want. Hence, an exact word match criteria was chosen for address and memo. 
+    * Phone number, name and email follows a partial word match criteria where users are able to search for contacts based on the keywords they provide. For example, if John has a phone number 90400202, then `find p/9040` would return John. 
+  * Cons: Edge cases that may cause the search to be ineffective are present and one such test case would be: `find e/gmail` where the intended effect the user might want is to search for all contacts that have the email address that has the domain name set to "gmail". However, the email "redherringmail@yahoo" will be matched with the user query and this search result does not meet the intended effect the user might want.  
+  * Temporary workaround: Instead of searching for "gmail", users are able to search for "@gmail" if they would want to find all contacts that have the domain name set as "gmail".  
+  
+
+* **Alternative 1:** Same search criteria for all the search parameters. 
+  * Pros: Easy to implement.
+  * Cons: It might lead to nonsensical search results especially when partial word match is used for the memo and address attribute.
+
+
+<div markdown="span" class="alert alert-info">  
+:information_source: **Note:** A word is defined as consecutive characters that is bounded by whitespaces.
+e.g. "This is a sentence!" contains the word "This", "is", "a" and "sentence! 
+</div>
+  
 ### \[Proposed\] Data archiving
 
 _{Explain here how the data archiving feature will be implemented}_
@@ -335,17 +424,21 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 | `* * *`  | user                                       | add my new contacts                                       | store my contacts in the app                                                  |
 | `* * *`  | user                                       | list all my contacts                                      | see all my contacts in the app                                                |
 | `* * *`  | user                                       | edit a contact                                            | correct mistakes I’ve made when adding in the contacts                        |
-| `* * *`  | user                                       | find my contacts by name                                  | access my desired contact without having to sieve through my entire phonebook |
+| `* * *`  | user                                       | find my contacts                                          | access my desired contact without having to sieve through my entire phonebook |
 | `* * *`  | user                                       | save my contacts in the phonebook                         | whenever I re-launch the application, my contacts will still be in it         |
 | `* * *`  | user                                       | create tags and group the contacts using them             | separate my work and personal contacts                                        |
 | `* * *`  | user                                       | clear all my entries with a single command                | remove all my contacts without having to manually delete them one at a time   |
 | `* * *`  | user                                       | delete a person                                           | remove entries that I no longer need                                          |
 | `* * *`  | user                                       | find a person by name                                     | locate details of persons without having to go through the entire list        |
-| `* * *`  | user                                       | add duplicate contacts (phone number / email)             | add contacts without keeping track of duplicates                              |
+| `* * *`  | user                                       | undo my actions                                           | restore previous address book states                                          |
+| `* * *`  | user                                       | redo my actions                                           | restore previous undid address book states                                    |
+| `* *`    | intermediate user                          | not have duplicated phone number or email                 | add and edit contacts without keeping track of duplicates                     |
 | `* *`    | intermediate user                          | invoke my most recently used command                      | add/modify/delete multiple contacts in a more efficient manner                |
 | `* *`    | intermediate user                          | find contacts by their name, phone number, tags and email | find the contacts I want quickly                                              |
-| `* *`    | intermediate user                          | add memos to contracts                                    | keep track of additional information about a client                           |
+| `* *`    | intermediate user                          | add memo to a contact                                     | keep track of miscellaneous information about a person                        |
+| `* *`    | intermediate user                          | edit memo of a contact                                    | modify or delete memo of a contact                                            |
 | `*`      | user with many persons in the address book | sort persons by name                                      | locate a person easily                                                        |
+
 *{More to be added}*
 
 ### Use cases
@@ -511,6 +604,21 @@ testers are expected to do more *exploratory* testing.
        Expected: Similar to previous.
 
 1. _{ more test cases …​ }_
+
+### Editing a person's memo
+
+1. Editing a person's memo while all persons are being shown
+
+    1. Prerequisites: List all persons using the `list` command. Multiple persons in the list.
+
+    2. Test case: `edit 1 m/interested in xx policy`<br>
+       Expected: First contact's memo is edited to "interested in xx policy". Details of the edited contact shown in the status message.
+
+    3. Test case: `edit 2 m/`<br>
+       Expected: Second contact's memo is cleared. Details of the edited contact shown in the status message.
+
+    4. Other incorrect edit commands to try: `edit`, `edit 1 bob`, `edit x m/VP`, `...` (where x is larger than the list size or smaller than 1)<br>
+       Expected: Invalid command message displaying the format for proper command usage.
 
 ### Saving data
 

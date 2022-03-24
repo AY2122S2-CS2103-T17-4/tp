@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import seedu.address.commons.core.Messages;
 import seedu.address.model.Model;
-import seedu.address.model.person.PersonContainsKeywordsPredicate;
+import seedu.address.model.person.predicate.PersonPredicate;
 
 /**
  * Finds and lists all persons in address book whose {@link seedu.address.model.person.PersonAttribute Attribute}
@@ -18,14 +18,14 @@ public class FindCommand extends Command {
             + ": Finds all persons whose contact details matches any of "
             + "the specified keywords (case-insensitive) and displays them as a list with index numbers.\n"
             + "Parameters: \n "
-            + "+ KEYWORD /n [NAME_PARAMETER]...\n" + "n/ [NAME_PARAMETER]...\n"
+            + "KEYWORD" + "n/ [NAME_PARAMETER]...\n"
             + "p/ [PHONE_PARAMETER]" + "...\n"
             + "e/ [EMAIL_PARAMETER]...\n" + "a/ [ADDRESS_PARAMETER]...\n" + "t/ [TAG_PARAMETER]...\n"
             + "m/ [MEMO_PARAMETER]...\n" + "Example: " + COMMAND_WORD + " n/ alice bob charlie" + " e/ alice@gmail.com";
     public static final String NO_PREFIX_MESSAGE = "At least one field to find must be provided.";
-    private final PersonContainsKeywordsPredicate predicate;
+    private final PersonPredicate predicate;
 
-    public FindCommand(PersonContainsKeywordsPredicate predicate) {
+    public FindCommand(PersonPredicate predicate) {
         this.predicate = predicate;
     }
 
@@ -35,7 +35,7 @@ public class FindCommand extends Command {
      * {@link #predicate} condition.
      *
      * @param model {@code Model} which the command should operate on.
-     * @return Message that should be reflected in the {@link seedu.address.ui.Ui}.
+     * @return message that should be reflected in the {@link seedu.address.ui.Ui}.
      */
     @Override
     public CommandResult execute(Model model) {
@@ -46,10 +46,10 @@ public class FindCommand extends Command {
     }
 
     /**
-     * Checks if two FindCommand method is equal.
+     * Checks if two {@code FindCommand} is equal.
      *
-     * @param other The other FindCommand object.
-     * @return Result of the check.
+     * @param other the other {@code FindCommand} object.
+     * @return true if equal; otherwise false.
      */
     @Override
     public boolean equals(Object other) {

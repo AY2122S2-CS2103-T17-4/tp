@@ -5,15 +5,22 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
 
 /**
  * Represents a Person's memo in the address book.
- * Guarantees: immutable; is always valid
+ * Guarantees: immutable; is valid as declared in {@link #isValidMemo(String)}
  */
-public class Memo extends PersonAttribute {
+public class Memo {
 
-    /** String message that represents invalid input. */
-    public static final String MESSAGE_CONSTRAINTS = "Memo should not contain /";
+    /** Maximum characters allowed. */
+    public static final int MAXIMUM_CHARACTERS = 1000;
 
-    /** Every character is allowed except /. */
-    public static final String VALIDATION_REGEX = "[^/]*";
+    /** String message that represents message constraints. */
+    public static final String MESSAGE_CONSTRAINTS = "Memo can take any values, up to a maximum of "
+            + MAXIMUM_CHARACTERS + " characters";
+
+    /** Every character is allowed, up to a maximum of MAXIMUM_CHARACTERS. */
+    public static final String VALIDATION_REGEX = ".{0," + MAXIMUM_CHARACTERS + "}";
+
+    /** An empty memo object. */
+    public static final Memo EMPTY_MEMO = new Memo("");
 
     /** String representation of Memo. */
     public final String memo;
@@ -21,7 +28,7 @@ public class Memo extends PersonAttribute {
     /**
      * Constructs a {@code Memo}.
      *
-     * @param memo A memo.
+     * @param memo A valid memo.
      */
     public Memo(String memo) {
         requireNonNull(memo);
@@ -31,15 +38,27 @@ public class Memo extends PersonAttribute {
 
     /**
      * Returns true if a given string is a valid memo.
+     *
+     * @param memo A memo to be checked for validity.
+     * @return If valid true; otherwise false.
      */
     public static boolean isValidMemo(String memo) {
         return memo.matches(VALIDATION_REGEX);
     }
 
     /**
-     * Returns string representation of Memo.
+     * Returns true if {@code memo} is equal to {@code EMPTY_MEMO}, false otherwise.
      *
-     * @return string representation of Memo.
+     * @return true if {@code memo} is equal to {@code EMPTY_MEMO}; otherwise false.
+     */
+    public boolean isEmpty() {
+        return this.equals(EMPTY_MEMO);
+    }
+
+    /**
+     * Returns string representation of {@code Memo}.
+     *
+     * @return String representation of {@code Memo}.
      */
     @Override
     public String toString() {
@@ -47,10 +66,10 @@ public class Memo extends PersonAttribute {
     }
 
     /**
-     * Checks if two Memo object is equal.
+     * Checks if two {@code Memo} object is equal.
      *
-     * @param other The other Memo object.
-     * @return true if equal; otherwise false.
+     * @param other The other {@code Memo} object.
+     * @return If equal true; otherwise false.
      */
     @Override
     public boolean equals(Object other) {
@@ -60,9 +79,9 @@ public class Memo extends PersonAttribute {
     }
 
     /**
-     * Returns hashcode of Memo.
+     * Returns hashcode of {@code Memo}.
      *
-     * @return hashcode of Memo.
+     * @return Hashcode of {@code Memo}.
      */
     @Override
     public int hashCode() {

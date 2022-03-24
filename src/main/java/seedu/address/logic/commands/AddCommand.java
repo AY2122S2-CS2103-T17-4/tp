@@ -32,7 +32,7 @@ public class AddCommand extends Command {
             + PREFIX_PHONE + "98765432 "
             + PREFIX_EMAIL + "johnd@example.com "
             + PREFIX_ADDRESS + "311, Clementi Ave 2, #02-25 "
-            + PREFIX_MEMO + "Peter's friend"
+            + PREFIX_MEMO + "Avid free climber"
             + PREFIX_TAG + "friends "
             + PREFIX_TAG + "owesMoney";
 
@@ -50,6 +50,13 @@ public class AddCommand extends Command {
         toAdd = person;
     }
 
+    /**
+     * Executes the add command and returns the result message.
+     *
+     * @param model {@code Model} which the add command should operate on.
+     * @return feedback message of the add operation result for display.
+     * @throws CommandException If an error occurs during add command execution.
+     */
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
@@ -59,9 +66,16 @@ public class AddCommand extends Command {
         }
 
         model.addPerson(toAdd);
+        model.saveAddressBookState();
         return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd));
     }
 
+    /**
+     * Checks if two {@code AddCommand} is equal.
+     *
+     * @param other the other {@code AddCommand} object.
+     * @return true if equal; otherwise false.
+     */
     @Override
     public boolean equals(Object other) {
         return other == this // short circuit if same object

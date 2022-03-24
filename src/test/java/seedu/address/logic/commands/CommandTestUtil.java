@@ -9,19 +9,20 @@ import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalPersons.AMY;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.exceptions.CommandException;
-import seedu.address.logic.parser.ArgumentMultimap;
-import seedu.address.logic.parser.ArgumentTokenizer;
+import seedu.address.logic.parser.FindPersonDescriptor;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
 import seedu.address.model.person.Person;
-import seedu.address.model.person.PersonContainsKeywordsPredicate;
+import seedu.address.model.person.predicate.PersonPredicate;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
+import seedu.address.testutil.PersonBuilder;
 
 /**
  * Contains helper methods for testing commands.
@@ -49,6 +50,8 @@ public class CommandTestUtil {
     public static final String EMAIL_DESC_BOB = " " + PREFIX_EMAIL + VALID_EMAIL_BOB;
     public static final String ADDRESS_DESC_AMY = " " + PREFIX_ADDRESS + VALID_ADDRESS_AMY;
     public static final String ADDRESS_DESC_BOB = " " + PREFIX_ADDRESS + VALID_ADDRESS_BOB;
+    public static final String MEMO_DESC_AMY = " " + PREFIX_MEMO + VALID_MEMO_AMY;
+    public static final String MEMO_DESC_BOB = " " + PREFIX_MEMO + VALID_MEMO_BOB;
     public static final String TAG_DESC_FRIEND = " " + PREFIX_TAG + VALID_TAG_FRIEND;
     public static final String TAG_DESC_HUSBAND = " " + PREFIX_TAG + VALID_TAG_HUSBAND;
 
@@ -126,10 +129,52 @@ public class CommandTestUtil {
         Person person = model.getFilteredPersonList().get(targetIndex.getZeroBased());
         final String[] splitName = person.getName().fullName.split("\\s+");
         String args = " n/" + splitName[0];
-        ArgumentMultimap argMultimap = ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE,
-                PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_TAG, PREFIX_MEMO);
-        model.updateFilteredPersonList(new PersonContainsKeywordsPredicate(argMultimap));
+        FindPersonDescriptor descriptor = new FindPersonDescriptor(args);
+        model.updateFilteredPersonList(new PersonPredicate(descriptor));
         assertEquals(1, model.getFilteredPersonList().size());
     }
 
+    /**
+     * Edits the first person in {@code model}.
+     *
+     * @param model model.
+     */
+    public static void editFirstPerson(Model model) {
+        Person person = model.getFilteredPersonList().get(0);
+        PersonBuilder personBuilder = new PersonBuilder(person);
+        Person editedPerson = personBuilder.withName(VALID_NAME_AMY).build();
+        model.setPerson(person, editedPerson);
+        model.saveAddressBookState();
+    }
+
+    /**
+     * Deletes the first person in {@code model}.
+     *
+     * @param model model.
+     */
+    public static void deleteFirstPerson(Model model) {
+        Person person = model.getFilteredPersonList().get(0);
+        model.deletePerson(person);
+        model.saveAddressBookState();
+    }
+
+    /**
+     * Adds a person in {@code model}.
+     *
+     * @param model model.
+     */
+    public static void addDefaultPerson(Model model) {
+        model.addPerson(AMY);
+        model.saveAddressBookState();
+    }
+
+    /**
+     * Clears the address book in {@code model}.
+     *
+     * @param model model.
+     */
+    public static void clear(Model model) {
+        model.setAddressBook(new AddressBook());
+        model.saveAddressBookState();
+    }
 }

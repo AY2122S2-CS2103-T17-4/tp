@@ -1,0 +1,23 @@
+@startuml
+!include style.puml
+skinparam ClassFontColor BLACK_COLOR
+skinparam ClassBorderColor BLACK_COLOR
+skinparam ClassHeaderBackgroundColor ORANGE_COLOR
+
+title After "list" command
+
+package stateHistory {
+    class State1 as "__state1:AddressBook__"
+    class State2 as "__state2:AddressBook__"
+    class State3 as "__state3:AddressBook__"
+}
+
+class State1 WHITE_COLOR
+class State3 WHITE_COLOR
+
+State1 -[hidden]right-> State2
+State2 -[hidden]right-> State3
+
+class Pointer as "currentStateIndex" WHITE_COLOR
+Pointer -up-> State2
+@end

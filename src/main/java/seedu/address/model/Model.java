@@ -93,4 +93,34 @@ public interface Model {
 
     /** Record the most recent user input except "history". */
     void recordCommand(String userInput);
+
+    /**
+     * Restores address book to its previous state.
+     */
+    void undoAddressBook();
+
+    /**
+     * Restores address book to its previous undid state.
+     */
+    void redoAddressBook();
+
+    /**
+     * Returns true if address book is undoable; otherwise returns false.
+     *
+     * @return true if undoable; false otherwise.
+     */
+    boolean canUndoAddressBook();
+
+    /**
+     * Returns true if address book is redoable; otherwise returns false.
+     *
+     * @return true if redoable; false otherwise.
+     */
+    boolean canRedoAddressBook();
+
+    /**
+     * Saves the current address book state.
+     */
+    void saveAddressBookState();
+
 }

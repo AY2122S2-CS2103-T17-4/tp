@@ -108,6 +108,9 @@ public class ParserUtil {
         if (!Memo.isValidMemo(trimmedMemo)) {
             throw new ParseException(Memo.MESSAGE_CONSTRAINTS);
         }
+        if (trimmedMemo.isEmpty()) {
+            return Memo.EMPTY_MEMO;
+        }
         return new Memo(trimmedMemo);
     }
 

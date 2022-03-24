@@ -1,0 +1,20 @@
+@startuml
+!include style.puml
+skinparam arrowThickness 1.1
+skinparam arrowColor MODEL_COLOR
+skinparam classBackgroundColor MODEL_COLOR
+
+Name -up-|> PersonAttribute
+Phone -up-|> PersonAttribute
+Email -up-|> PersonAttribute
+Address -up-|> PersonAttribute
+Memo -up-|> PersonAttribute
+Tag -up-|> PersonAttribute
+
+Person -up-> "*" Tag
+Person *-up-> "1" Name
+Person *-up-> "1" Phone
+Person *-up-> "1" Email
+Person *-up-> "1" Address
+Person *-up-> "0..1" Memo
+@enduml

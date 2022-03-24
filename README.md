@@ -9,7 +9,7 @@
 
 **Abπ** is an improvement of **[AB3](https://se-education.org/addressbook-level3)** and it is optimized specifically for
 users who prefer typing via the Command Line Interface(CLI) while still having the benefits of a Graphical User Interface (GUI).
-It helps users keep track of their professional contacts, separating it from their personal contacts. 
+It helps users keep track of their professional contacts, separating it from their personal contacts.
 <br>
 
 ![Ui](docs/images/Ui.png)
@@ -34,7 +34,7 @@ It helps users keep track of their professional contacts, separating it from the
 
 ## Instructions
 ***
-~~**All you need to do is:**~~ 
+~~**All you need to do is:**~~
 
 Currently, there are no instructions to download ABπ because it is still in the development phase.
 ***

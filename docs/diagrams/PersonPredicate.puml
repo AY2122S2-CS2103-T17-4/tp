@@ -1,0 +1,29 @@
+@startuml
+!include style.puml
+mainframe sd get PersonPredicate
+
+box Logic LOGIC_COLOR_T1
+participant ":FindCommandParser" as FindCommandParser LOGIC_COLOR
+participant "descriptor:FindPersonDescriptor" as FindPersonDescriptor LOGIC_COLOR
+participant "predicate:PersonPredicate" as PersonPredicate LOGIC_COLOR
+end box
+
+
+activate FindCommandParser
+FindCommandParser -> FindCommandParser : getDescriptor("n/alice")
+activate FindCommandParser
+
+create FindPersonDescriptor
+FindCommandParser -> FindPersonDescriptor : FindPersonDescriptor("n/alice")
+activate FindPersonDescriptor
+
+FindPersonDescriptor --> FindCommandParser : descriptor
+deactivate FindPersonDescriptor
+FindCommandParser --> FindCommandParser : descriptor
+deactivate FindCommandParser
+
+create PersonPredicate
+FindCommandParser -> PersonPredicate : PersonPredicate(descriptor)
+activate PersonPredicate
+PersonPredicate --> FindCommandParser : predicate
+@enduml

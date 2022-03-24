@@ -20,7 +20,7 @@ import seedu.address.model.person.Person;
 public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
-    private final AddressBook addressBook;
+    private final StateAddressBook stateAddressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
 
@@ -32,9 +32,9 @@ public class ModelManager implements Model {
 
         logger.fine("Initializing with address book: " + addressBook + " and user prefs " + userPrefs);
 
-        this.addressBook = new AddressBook(addressBook);
+        this.stateAddressBook = new StateAddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
-        filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
+        filteredPersons = new FilteredList<>(this.stateAddressBook.getPersonList());
     }
 
     public ModelManager() {
@@ -80,18 +80,18 @@ public class ModelManager implements Model {
 
     @Override
     public void setAddressBook(ReadOnlyAddressBook addressBook) {
-        this.addressBook.resetData(addressBook);
+        this.stateAddressBook.resetData(addressBook);
     }
 
     @Override
     public ReadOnlyAddressBook getAddressBook() {
-        return addressBook;
+        return stateAddressBook;
     }
 
     @Override
     public boolean hasPerson(Person person) {
         requireNonNull(person);
-        return addressBook.hasPerson(person);
+        return stateAddressBook.hasPerson(person);
     }
 
     /**
@@ -102,17 +102,17 @@ public class ModelManager implements Model {
     public boolean hasPersonExcept(Person person, Person except) {
         requireNonNull(person);
         requireNonNull(except);
-        return addressBook.hasPersonExcept(person, except);
+        return stateAddressBook.hasPersonExcept(person, except);
     }
 
     @Override
     public void deletePerson(Person target) {
-        addressBook.removePerson(target);
+        stateAddressBook.removePerson(target);
     }
 
     @Override
     public void addPerson(Person person) {
-        addressBook.addPerson(person);
+        stateAddressBook.addPerson(person);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
     }
 
@@ -120,14 +120,14 @@ public class ModelManager implements Model {
     public void setPerson(Person target, Person editedPerson) {
         requireAllNonNull(target, editedPerson);
 
-        addressBook.setPerson(target, editedPerson);
+        stateAddressBook.setPerson(target, editedPerson);
     }
 
     //=========== Filtered Person List Accessors =============================================================
 
     /**
      * Returns an unmodifiable view of the list of {@code Person} backed by the internal list of
-     * {@code versionedAddressBook}
+     * {@code stateAddressBook}
      */
     @Override
     public ObservableList<Person> getFilteredPersonList() {
@@ -146,6 +146,58 @@ public class ModelManager implements Model {
         CommandList.record(userInput);
     }
 
+    //=========== Undo and redo ==============================================================================
+
+    /**
+     * Restores address book to its previous state.
+     */
+    @Override
+    public void undoAddressBook() {
+        stateAddressBook.undo();
+    }
+
+    /**
+     * Restores address book to its previous undid state.
+     */
+    @Override
+    public void redoAddressBook() {
+        stateAddressBook.redo();
+    };
+
+    /**
+     * Returns true if address book is undoable; otherwise returns false.
+     *
+     * @return true if undoable; false otherwise.
+     */
+    @Override
+    public boolean canUndoAddressBook() {
+        return stateAddressBook.isUndoable();
+    };
+
+    /**
+     * Returns true if address book is redoable; otherwise returns false.
+     *
+     * @return true if redoable; false otherwise.
+     */
+    @Override
+    public boolean canRedoAddressBook() {
+        return stateAddressBook.isRedoable();
+    };
+
+    /**
+     * Saves the current address book state.
+     */
+    @Override
+    public void saveAddressBookState() {
+        stateAddressBook.saveState();
+    };
+
+    /**
+     * Checks if two {@code ModelManager} is equal.
+     *
+     * @param obj the other {@code ModelManager} object.
+     * @return true if equal; otherwise false.
+     */
     @Override
     public boolean equals(Object obj) {
         // short circuit if same object
@@ -160,7 +212,7 @@ public class ModelManager implements Model {
 
         // state check
         ModelManager other = (ModelManager) obj;
-        return addressBook.equals(other.addressBook)
+        return stateAddressBook.equals(other.stateAddressBook)
                 && userPrefs.equals(other.userPrefs)
                 && filteredPersons.equals(other.filteredPersons);
     }
