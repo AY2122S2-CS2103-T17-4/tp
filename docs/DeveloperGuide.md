@@ -152,7 +152,6 @@ Classes used by multiple components are in the `seedu.addressbook.commons` packa
 
 ## **Implementation**
 
-This section describes some noteworthy details on how certain features are implemented.
 
 ### \[Proposed\] Undo/redo feature
 
@@ -233,6 +232,56 @@ The following activity diagram summarizes what happens when a user executes a ne
     * Cons: We must ensure that the implementation of each individual command are correct.
 
 _{more aspects and alternatives to be added}_
+
+###  HistoryCommand feature
+
+To implement HistoryCommand, a "Recorder" class is firstly needed to be added.
+Thus, a `CommandList` Class was created to record the recent commands. Either, 
+typing `history` or press the up arrow key will invoke `history command`. 
+It auto-fills the textbox with the last command being executed and shows the 
+most recent 3 commands in the message box.
+
+
+* `ModelManager#record()` — Record the recent commands into `CommandList`.
+* `HistoryCommand#execute()` — Load the most recent command from `CommandList`.
+
+Class Diagram of CommandList class:
+
+<img src="images/CommandListClassDiagram.png" width="250"/>
+
+CommandList class is using an ArrayList to record the most recent user inputs
+(the number of inputs recorded is determined by MAX_RECORD_NUMBER). When the ArrayList size reaches
+MAX_RECORD_NUMBER, CommandList static class will remove the oldest command in the list in order to
+record the most recent command.
+
+**Aspect: When and how CommandList records a command:**
+
+When `LogicManager` received the command, which is before the 
+executing of the command, and even before
+it was passed to `AddressBookParser` class.
+This means that even if user input a **_faulty command_**,
+which cannot be recognized by `AddressBookParser`,
+the command will still be recorded into history.
+
+`LogicManager` object will call `record()` from `Model` object, and `Model` object will call static
+method `record()` from static class `CommandList` to record the last executed command into CommandList
+in the form of String.
+
+The following sequence diagram shows the process of recording user command before
+executing the user command.
+
+<img src="images/Record-before-executing.png" width="600"/>
+
+**Aspect: The execution of HistoryCommand:**
+
+When a `HistoryCommand` is being executed, if it is executed successfully, 
+it will return a special `CommandResult` to inform `UI` and ask `UI` to auto-fill the textbox 
+with the most recent Command. If it is not executed successfully(i.e. there is no history yet, history command
+is executed as the first command), it will throw `CommandException` and show the error message on the console.
+
+The following activity diagram summarizes what happens when a user executes history command:
+
+<img src="images/HistoryActivityDiagram.png" width="482" />
 
 ### \[Proposed\] Data archiving
 
