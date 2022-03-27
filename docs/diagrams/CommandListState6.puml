@@ -1,0 +1,23 @@
+@startuml
+!include style.puml
+skinparam ClassFontColor BLACK_COLOR
+skinparam ClassBorderColor BLACK_COLOR
+skinparam ClassHeaderBackgroundColor ORANGE_COLOR
+
+title Pressing down-arrow
+
+package stateHistory {
+    class State0 as "find n/Anny"
+    class State1 as "find n/Bob"
+    class State2 as "find n/Cathy"
+    class State3 as "position 3 is empty"
+}
+
+State0 -[hidden]right-> State1
+State1 -[hidden]right-> State2
+State2 -[hidden]right-> State3
+
+
+class Pointer as "currentPointerIndex" WHITE_COLOR
+Pointer -up-> State2
+@end

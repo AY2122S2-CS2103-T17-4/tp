@@ -335,6 +335,8 @@ A `Person` `Memo` and `ContactDate` can be added during the `add` command or edi
 
 Given below is an example usage scenario and how `Memo` can be edited by the `edit` command.
 
+
+
 Step 1. The user wants to edit the `Memo` of the first person in the address book and executes `edit 1 m/Avid hiker`.
 
 The following sequence diagram shows how the `edit 1 m/Avid hiker` operation works:
@@ -343,9 +345,9 @@ The following sequence diagram shows how the `edit 1 m/Avid hiker` operation wor
 
 Editing of ContactedDate via the `edit` command works similarly, the only difference is the `c/` prefix.
 
-The `Memo` and `ContactedDate` can also be added during the `add` command. The sequence is similar to the `edit 1 m/Avid hiker` diagram and for brevity, it will be omitted. The following are the differences of the sequence diagram: 
+The `Memo` and `ContactedDate` can also be added during the `add` command. The sequence is similar to the `edit 1 m/Avid hiker` diagram and for brevity, it will be omitted. The following are the differences of the sequence diagram:
 - `AddCommandParser` instead of `EditCommandParser`
-- `AddCommand` instead of `EditCommand` 
+- `AddCommand` instead of `EditCommand`
 - `Model#addPerson(Person)` instead of `Model#setPerson(Person, Person)`
 - `Model#updateFilteredPersonList(Predicate)` will not be called.
 
@@ -358,8 +360,62 @@ The `Memo` and `ContactedDate` can also be added during the `add` command. The s
     * Cons: Requires more rigorous testing of `add` and `edit` command as this increases the number of possible arguments that can be parsed by `AddCommandParser` and `EditCommandParser` respectively.
 
 * **Alternative:** Implement individual commands to edit `Memo` and `ContactedDate`.
-    * Pros: `Memo` and `ContactedDate` will be separated from the `add` and `edit` command. It can only be edited by its respective command.   
+    * Pros: `Memo` and `ContactedDate` will be separated from the `add` and `edit` command. It can only be edited by its respective command.
     * Cons: There will be a lot of code duplication. The new commands to edit `Memo` and `ContactedDate` will be similar to the `edit` command. We feel that this would violate the DRY principle.
+
+
+###  Easy navigation among recent commands using arrow keys
+
+Pressing up-arrow key and down-arrow key allows user to navigate among the recent user inputs. 
+To implement this feature, a "Recorder" class to record the recent user inputs is firstly 
+needed to be added. Thus, a `CommandList` Class was created to record the recent commands. 
+Either, typing `previous` or press the up arrow key will invoke `previous command`. 
+It auto-fills the textbox with the previous command.
+For example, after successfully executed "find n/a", "find n/b", "find n/c", pressing the up-arrow
+key will automatically fill-in the textbox with "find n/c", pressing up-arrow key again will 
+fill-in the textbox with "find n/b", now pressing up-arrow key again will fill-in the textbox 
+with "find n/a", and then pressing down-arrow key will fill-in textbox with "find n/b" again.
+
+State 0, no use input yet:
+![CommandListState0](images/CommandListState0.png)
+
+State 1, User executed "find n/Anny":
+![CommandListState1](images/CommandListState1.png)
+
+State 2, User executed "find n/Bob":
+![CommandListState2](images/CommandListState2.png)
+
+State 3, User executed "find n/Cathy":
+![CommandListState3](images/CommandListState3.png)
+
+State 4, User pressed up-arrow key:
+"find n/Cathy" is auto-filled in textbox
+![CommandListState4](images/CommandListState4.png)
+
+State 5, User pressed up-arrow key again:
+"find n/Bob" is auto-filled in textbox
+![CommandListState5](images/CommandListState5.png)
+
+State 6, User pressed down-arrow key:
+"find n/Cathy" is auto-filled in textbox
+![CommandListState6](images/CommandListState6.png)
+
+Class Diagram of CommandList class:
+
+<img src="images/CommandListClassDiagram.png" width="250"/>
+
+
+**Aspect: The execution of PreviousCommand/NextCommand:**
+
+When a `PreviousCommand` or `NextCommand` is being executed, if it is executed successfully, 
+it will return a special `CommandResult` to inform `UI` and ask `UI` to auto-fill the textbox 
+with the most recent Command. If it is not executed successfully(i.e. there is no previous 
+or next command available), it will throw `CommandException` and show the error message on the console.
+
+The following activity diagram summarizes what happens when a user executes history command:
+
+<img src="images/HistoryActivityDiagram.png" width="482" />
+
 
 --------------------------------------------------------------------------------------------------------------------
 

@@ -1,0 +1,19 @@
+@startuml
+
+start
+:CommandList.getCurrentCommand();
+:user pressed UP/DOWN arrow-key;
+
+if (No previous/next command available) then (yes)
+  :throw exception;
+  :console show error message;
+else ([else])
+  :return CommandResult to LogicManager;
+  :console show successful message;
+  :UI auto-fill the textbox
+  with the previous/next command;
+endif
+
+stop
+
+@enduml

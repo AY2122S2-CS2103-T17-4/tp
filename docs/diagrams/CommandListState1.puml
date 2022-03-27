@@ -1,0 +1,22 @@
+@startuml
+!include style.puml
+skinparam ClassFontColor BLACK_COLOR
+skinparam ClassBorderColor BLACK_COLOR
+skinparam ClassHeaderBackgroundColor ORANGE_COLOR
+
+title After record("find n/Anny")
+
+package stateHistory {
+    class State0 as "find n/Anny"
+    class State1 as "position 1 is empty"
+    class State2 as "find n/Cathy"
+}
+
+State0 -[hidden]right-> State1
+State1 -[hidden]right-> State2
+
+hide State2
+
+class Pointer as "currentPointerIndex" WHITE_COLOR
+Pointer -up-> State1
+@end
