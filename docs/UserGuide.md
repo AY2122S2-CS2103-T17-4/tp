@@ -3,25 +3,52 @@ layout: page
 title: User Guide
 ---
 
-AddressBook Level 3.14 (Abπ) is a **360° all-rounded desktop app for managing contacts, optimized for use via a Command Line Interface** (CLI). Abπ is catered towards fast-typers and individuals who want an organized address book with modern features. Its key features include efficient filtering of contacts based on various attributes (name, email, tags, etc), copying of all emails in the address book and a memo section that allows you to note down notable details about a person. Whether you are an insurance agent who needs to manage numerous client contacts, or a student leader who needs to contact a large number of students, Abπ got you covered. So what are you waiting for? Download and try out Abπ today!
+AddressBook Level 3.14 (Abπ) is a **360° all-rounded desktop app for managing contacts,
+optimized for use via a Command Line Interface** (CLI). Abπ is catered towards fast-typers
+and individuals who want an organized address book with modern features. Its key features
+include efficient filtering of contacts based on various attributes (name, email, tags, etc),
+copying of all emails in the address book and a memo section that allows you to note down 
+notable details about a person. Whether you are an insurance agent who needs to manage numerous
+client contacts, or a student leader who needs to contact a large number of students, 
+Abπ got you covered. So what are you waiting for? Download and try out Abπ today!
 
-* Table of Contents
-{:toc}
+## Table of Contents
+1. [Quick start](#Quick start)
+2. Features<br/>
+   2.1 Notes about the command format:<br/>
+   2.2 Viewing help<br/>
+   2.3 Listing all persons<br/>
+   2.4 Adding a person<br/>
+   2.5 Editing a person<br/>
+   2.6 Locate persons by name, phone number, tags, email, address, memo and last contacted date<br/>
+   2.7 Undoing commands <br/>
+   2.8 Redoing commands<br/>
+   2.9 Easy navigation among recent commands:<br/>
+   2.10 Copying emails<br/>
+   2.11 Deleting a person<br/>
+   2.12 Clearing all entries<br/>
+   2.13 Exiting the program<br/>
+   2.14 Preventing duplicate entries (phone and email)<br/>
+   2.15 Saving the data<br/>
+   2.16 Editing the data file<br/>
+3. FAQ
+4. Command Summary
+
 
 --------------------------------------------------------------------------------------------------------------------
 
-## Quick start
+## 1. Quick start
 
-1. Ensure you have Java `11` or above installed in your Computer.
+1.1 Ensure you have Java `11` or above installed in your Computer.
 
-1. Download the latest `abpie.jar` from [here](https://github.com/AY2122S2-CS2103T-T17-4/tp/releases).
+1.2 Download the latest `abpie.jar` from [here](https://github.com/AY2122S2-CS2103T-T17-4/tp/releases).
 
-1. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
+1.3 Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
 
-1. Double-click the file to start the app. The GUI similar to the below should appear in a few seconds. Note how the app contains some sample data.<br>
+1.4 Double-click the file to start the app. The GUI similar to the below should appear in a few seconds. Note how the app contains some sample data.<br>
    ![Ui](images/Ui.png)
 
-1. Type the command in the command box and press Enter to execute it. e.g. typing **`help`** and pressing Enter will open the help window.<br>
+1.5 Type the command in the command box and press Enter to execute it. e.g. typing **`help`** and pressing Enter will open the help window.<br>
    Some example commands you can try:
 
    * **`list`** : Lists all contacts.
@@ -34,15 +61,15 @@ AddressBook Level 3.14 (Abπ) is a **360° all-rounded desktop app for managing 
 
    * **`exit`** : Exits the app.
 
-1. Refer to the [Features](#features) below for details of each command.
+1.6 Refer to the [Features](#features) below for details of each command.
 
 --------------------------------------------------------------------------------------------------------------------
 
-## Features
+## 2. Features
 
 <div markdown="block" class="alert alert-info">
 
-**:information_source: Notes about the command format:**<br>
+**2.1 :information_source: Notes about the command format:**<br>
 
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
   e.g. in `add n/NAME`, `NAME` is a parameter which can be used as `add n/John Doe`.
@@ -65,7 +92,7 @@ AddressBook Level 3.14 (Abπ) is a **360° all-rounded desktop app for managing 
 
 </div>
 
-### Viewing help : `help`
+### 2.2 Viewing help : `help`
 
 Shows a message explaining how to access the help page.
 
@@ -73,13 +100,13 @@ Shows a message explaining how to access the help page.
 
 Format: `help`
 
-### Listing all persons : `list`
+### 2.3 Listing all persons : `list`
 
 Shows a list of all persons in the address book.
 
 Format: `list`
 
-### Adding a person: `add`
+### 2.4 Adding a person: `add`
 
 Adds a person to the address book.
 
@@ -97,13 +124,14 @@ Examples:
 * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 c/01-01-2020 m/Avid free climber`
 * `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 m/Partner in crime t/criminal`
 
-### Editing a person : `edit`
+### 2.5 Editing a person : `edit`
 
 Edits an existing person in the address book.
 
 Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [c/CONTACTED DATE] [m/MEMO] [t/TAG]…​`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. 
+The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * When editing tags, the existing tags of the person will be removed i.e adding of tags is not cumulative.
@@ -111,13 +139,14 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [c/CONTACTED DATE] 
 * You can edit a peron's contacted date to "Not contacted" by typing `c/` without specifying a date after it.
 
 Examples:
-* `edit 1 p/91234567 e/johndoe@example.com` edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
+* `edit 1 p/91234567 e/johndoe@example.com` edits the phone number and email address of the 1st person 
+to be `91234567` and `johndoe@example.com` respectively.
 * `edit 2 n/Betsy Crower t/` edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
 * `edit 2 m/Avid free climber` edits the memo of the 2nd person to be `Avid free climber`.
 * `edit 2 c/01-01-2020` edits the contacted date of the 2nd person to be `Last contacted on 01-01-2020`.
 * `edit 2 m/ c/` edits the memo of the 2nd person to be empty and the contacted date to be `Not contacted`.
 
-### Locate persons by name, phone number, tags, email, address, memo and last contacted date:`find`
+### 2.6 Locate persons by name, phone number, tags, email, address, memo and last contacted date:`find`
 
 Finds persons whose names contain any of the given keywords.
 
@@ -151,7 +180,7 @@ Examples:
 * `find c/1` would find contacts that were contacted 1 or more days ago.
 * `find c/` would find contacts that had not been contacted.
 
-### Undoing commands :
+### 2.7 Undoing commands :
 
 Undo previous commands that modified data, which includes: `add`, `edit`, `delete`, `clear` and `scrub`.
 
@@ -161,7 +190,7 @@ Examples:
 * `undo` after calling `delete 1` restores the address book to its previous state prior to the deletion.
 * `undo` after calling `edit 1 n/Bob` restores the address book to its previous state prior to the edit.
 
-### Redoing commands :
+### 2.8 Redoing commands :
 
 Redo previous undid states.
 
@@ -170,7 +199,7 @@ Format: `redo`
 Examples:
 * `redo` after calling `undo` restores the address book to its previous undid state prior to undo.
 
-### Easy navigation among recent commands: 
+### 2.9 Easy navigation among recent commands: 
 #### Pressing `UP_ARROW_KEY` or `DOWN_ARROW_KEY`
 
 * navigate among the recent inputs and autofill it in the textbox.
@@ -181,7 +210,7 @@ Examples:
 * Then pressing `UP_ARROW_KEY` again will fill-in the textbox with "find n/Bob"
 * Then pressing `DOWN_ARROW_KEY` once will fill-in the textbox with "find n/Cathy"
 
-### Copying emails : `copyemails`
+### 2.10 Copying emails : `copyemails`
 
 Copies a comma-separated list of all displayed emails to clipboard.
 
@@ -191,7 +220,7 @@ Examples:
 * `list` followed by `copyemails` will copy all emails currently displayed in the list to your clipboard.
 * When you paste from clipboard, a comma-separated list will appear. (E.g. "johndoe@example.com; betsycrowe@example.com")
 
-### Deleting a person : `delete`
+### 2.11 Deleting a person : `delete`
 
 Deletes the specified person from the address book.
 
@@ -205,27 +234,27 @@ Examples:
 * `list` followed by `delete 2` deletes the 2nd person in the address book.
 * `find n/Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
 
-### Clearing all entries : `clear`
+### 2.12 Clearing all entries : `clear`
 
 Clears all entries from the address book.
 
 Format: `clear`
 
-### Exiting the program : `exit`
+### 2.13 Exiting the program : `exit`
 
 Exits the program.
 
 Format: `exit`
 
-### Preventing duplicate entries (phone and email) :
+### 2.14 Preventing duplicate entries (phone and email) :
 
 Abπ helps to manage duplicates by preventing duplicate entries of phone number and email when using the `add` and `edit` commands. All phone numbers and emails in Abπ will be unique.
 
-### Saving the data
+### 2.15 Saving the data
 
 Abπ data are saved in the hard disk automatically after any command that changes the data. There is no need to save manually.
 
-### Editing the data file
+### 2.16 Editing the data file
 
 Abπ data are saved as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
 
@@ -235,7 +264,7 @@ If your changes to the data file makes its format invalid, AddressBook will disc
 
 --------------------------------------------------------------------------------------------------------------------
 
-## FAQ
+## 3. FAQ
 
 **How do I save in Abπ?**<br>
 There is no need to save manually. Abπ automatically saves the data after any command that changes the data.
@@ -254,7 +283,7 @@ When the data file is corrupted, an empty address book will be shown. Do not wor
 
 --------------------------------------------------------------------------------------------------------------------
 
-## Command summary
+## 4. Command summary
 
 Action | Format, Examples
 --------|------------------
