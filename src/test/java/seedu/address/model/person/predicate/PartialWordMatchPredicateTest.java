@@ -26,7 +26,7 @@ class PartialWordMatchPredicateTest {
         assertTrue(phonePredicate.test(new PersonBuilder().withPhone("12349543").build()));
         assertTrue(phonePredicate.test(new PersonBuilder().withPhone("9543211").build()));
         assertTrue(phonePredicate.test(new PersonBuilder().withPhone("11954311").build()));
-        assertTrue(emailPredicate.test(new PersonBuilder().withEmail("redherringmail@yahoo").build()));
+        assertTrue(emailPredicate.test(new PersonBuilder().withEmail("redherringmail@yahoo.com").build()));
     }
 
     @Test
