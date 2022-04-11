@@ -1,4 +1,4 @@
-
+---
 layout: page
 title: Xu Peizhe's Project Portfolio Page
 ---
@@ -57,4 +57,4 @@ The user interacts with it using a CLI, and it has a GUI created with JavaFX. It
     [\#234](https://github.com/AY2122S2-CS2103T-T17-4/tp/pull/234),
     [\#237](https://github.com/AY2122S2-CS2103T-T17-4/tp/pull/237),
     [\#268](https://github.com/AY2122S2-CS2103T-T17-4/tp/pull/268)
-  * Reported bugs and suggestions for other teams in the class (examples: [1](https://github.com/xpzmichael/ped/issues/1), [2](https://github.com/xpzmichael/ped/issues/2), [3](https://github.com/xpzmichael/ped/issues/3), [4](https://github.com/xpzmichael/ped/issues/4), [5](https://github.com/xpzmichael/ped/issues/5), [6](https://github.com/xpzmichael/ped/issues/6), [7](https://github.com/xpzmichael/ped/issues/7), [8](https://github.com/xpzmichael/ped/issues/8), [9](https://github.com/xpzmichael/ped/issues/9), [10](https://github.com/xpzmichael/ped/issues/10), [11](https://github.com/xpzmichael/ped/issues/11),)
+  * Reported bugs and suggestions for other teams in the class (examples: [1](https://github.com/xpzmichael/ped/issues/1), [2](https://github.com/xpzmichael/ped/issues/2), [3](https://github.com/xpzmichael/ped/issues/3), [4](https://github.com/xpzmichael/ped/issues/4), [5](https://github.com/xpzmichael/ped/issues/5), [6](https://github.com/xpzmichael/ped/issues/6), [7](https://github.com/xpzmichael/ped/issues/7), [8](https://github.com/xpzmichael/ped/issues/8), [9](https://github.com/xpzmichael/ped/issues/9), [10](https://github.com/xpzmichael/ped/issues/10), [11](https://github.com/xpzmichael/ped/issues/11),[12](https://github.com/AY2122S2-CS2103T-T17-1/tp/issues/273))
